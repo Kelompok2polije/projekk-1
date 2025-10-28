@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Menu | K SIXTEEN CAFE</title>
+  <link href="css.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <div class="navbar">
+      <div>
+        <span class="logo-image"><img src="aset beranda/logo.jpg" alt="Logo"></span>
+        <span class="logo-text">K SIXTEEN CAFE</span>
+      </div>
+      <nav>
+        <a href="beranda.html">Home</a>
+        <a href="Menu.html" class="active">Menu</a>
+        <a href="About.html">About</a>
+        <a href="Kontak.html">Contact</a>
+      </nav>
+    </div>
+
+    <section class="section-menu">
+      <h2>Menu</h2>
+      <div class="menu-tabs">
+        <button class="menu-tab active" data-menu="makanan" onclick="switchMenu('makanan')">Makanan</button>
+        <button class="menu-tab" data-menu="minuman" onclick="switchMenu('minuman')">Minuman</button>
+      </div>
+
+      <div id="menu-list-container">
+        <div class="menu-list" id="menu-makanan"></div>
+        <div class="menu-list" id="menu-minuman" style="display:none"></div>
+      </div>
+
+      <div class="cart-bar" id="cartBar">
+        <div>
+          <div class="cart-title">Keranjang</div>
+          <div class="cart-list" id="cartList"></div>
+          <div class="cart-total" id="cartTotal"></div>
+        </div>
+        <div class="cart-actions">
+          <button class="cart-btn-main ghost" onclick="resetCart()">Reset</button>
+          <button class="cart-btn-main" onclick="openCartModal()" id="cartCheckoutBtn" disabled>Checkout & Order</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modal pembayaran -->
+    <div class="modal" id="cartModal">
+      <div class="modal-card">
+        <button class="modal-close-btn" onclick="closeCartModal()">&times;</button>
+        <h3>Konfirmasi Pesanan</h3>
+        <div id="cartModalList"></div>
+        <div id="cartModalTotal"></div>
+        <div id="cartModalPayOptions"></div>
+        <div id="cartModalPayDetails"></div>
+        <div class="modal-actions">
+          <button class="btn" id="btnCartKirimPesan" onclick="kirimKeranjangWA()" disabled>Kirim Pesanan via WhatsApp</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      &copy; 2025 KSIX Café
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+    <div class="footer">
+      &copy; 2025 KSIX Café &mdash; Powered by Kopi & Kuning Hitam
+    </div>
+  </div>
+  <script>
+    // ---------- MENU DATA ----------
+    const makanan = [
+      { nama:"Ayam Penyet Sak Segone", harga:16000, img:"https://images.unsplash.com/photo-1544025162-d76694265947?w=800", desc:"Ayam goreng penyet + nasi, sambal, lalapan" },
+      { nama:"Tempe Penyet Sak Segone", harga:12000, img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800", desc:"Tempe goreng penyet + nasi, sambal, lalapan" },
+      { nama:"Telur Penyet Sak Segone", harga:12000, img:"https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800", desc:"Telur dadar penyet + nasi, sambal, lalapan" },
+      { nama:"Pentol Penyet Sak Segone", harga:12000, img:"https://images.unsplash.com/photo-1597301501023-6b3b7f8c0f5c?w=800", desc:"Pentol goreng penyet + nasi, sambal, lalapan" },
+      { nama:"Ayam Geprek Sak Segone", harga:12000, img:"https://images.unsplash.com/photo-1544025162-d76694265947?w=800", desc:"Ayam geprek + nasi, sambal, lalapan" },
+      { nama:"Chicken Ricebowl (Blackpepper / Spicy Mayo)", harga:15000, img:"https://images.unsplash.com/photo-1604908177522-0b7d9b5e6a5a?w=800", desc:"Ricebowl ayam blackpepper/spicy mayo" },
+      { nama:"Mix Platter (Kentang, Sosis, Nugget)", harga:12000, img:"https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=800", desc:"Kentang, sosis, nugget goreng" },
+      { nama:"Otak-Otak", harga:10000, img:"https://images.unsplash.com/photo-1542444459-db1cfb58bd1a?w=800", desc:"Otak-otak goreng" },
+      { nama:"Kentang Goreng", harga:12000, img:"https://images.unsplash.com/photo-1551218808-94e220e084d2?w=800", desc:"French fries" },
+      { nama:"Sosis Goreng", harga:10000, img:"https://images.unsplash.com/photo-1544025162-d76694265947?w=800", desc:"Sosis goreng crispy" },
+      { nama:"Nugget Goreng", harga:12000, img:"https://images.unsplash.com/photo-1550547660-d9450f859349?w=800", desc:"Nugget ayam goreng" },
+      { nama:"Cireng", harga:10000, img:"https://images.unsplash.com/photo-1617191514256-6c2d9d6c9b8b?w=800", desc:"Cireng crispy" },
+      { nama:"Pentol Goreng", harga:12000, img:"https://images.unsplash.com/photo-1597301501023-6b3b7f8c0f5c?w=800", desc:"Pentol daging goreng" },
+      { nama:"Risol", harga:12000, img:"https://images.unsplash.com/photo-1604908177522-0b7d9b5e6a5a?w=800", desc:"Risoles isi sayur & ayam" },
+      { nama:"Roti Panggang (Coklat / Keju)", harga:8000, img:"https://images.unsplash.com/photo-1540854748147-1a1f9d0f1f5f?w=800", desc:"Roti panggang coklat / keju. Mix +2K" }
+    ];
+    const minuman = [
+      { nama:"Kopi Susu", harga:12000, img:"https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800", desc:"Signature kopi susu creamy" },
+      { nama:"Cappucino", harga:12000, img:"https://images.unsplash.com/photo-1511920170033-f8396924c348?w=800", desc:"Espresso + susu steamed" },
+      { nama:"Mochachino", harga:14000, img:"https://images.unsplash.com/photo-1511407397940-d57f68e81203?w=800", desc:"Espresso + coklat + susu" },
+      { nama:"Kopi Karamel", harga:14000, img:"https://images.unsplash.com/photo-1464306076886-debede6e8a9b?w=800", desc:"Kopi susu karamel" },
+      { nama:"Kopi Hazelnut", harga:14000, img:"https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=800", desc:"Kopi susu hazelnut" },
+      { nama:"Kopi Aren", harga:14000, img:"https://images.unsplash.com/photo-1439152951040-7bdd0dddff96?w=800", desc:"Kopi susu gula aren" },
+      { nama:"Kopi Vanilla", harga:14000, img:"https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800", desc:"Kopi susu vanilla" },
+      { nama:"Kopi Pandan", harga:14000, img:"https://images.unsplash.com/photo-1525391311253-1f3a3a3fda5c?w=800", desc:"Kopi susu pandan" },
+      { nama:"Americano", harga:10000, img:"https://images.unsplash.com/photo-1525253086316-d0c936c814f8?w=800", desc:"Espresso + air panas" },
+      { nama:"Kopi Tubruk", harga:6000, img:"https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=800", desc:"Kopi tubruk klasik" },
+      { nama:"Choco Almond", harga:14000, img:"https://images.unsplash.com/photo-1542444459-db1cfb58bd1a?w=800", desc:"Coklat, susu, almond" },
+      { nama:"Milky Chocolate", harga:13000, img:"https://images.unsplash.com/photo-1613470209773-67d5e74c0cf1?w=800", desc:"Coklat susu creamy" },
+      { nama:"Melon Squash", harga:10000, img:"https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?w=800", desc:"Minuman melon soda segar" },
+      { nama:"Lime Squash", harga:10000, img:"https://images.unsplash.com/photo-1582719478174-8f3e8bf35c9d?w=800", desc:"Minuman lime soda segar" },
+      { nama:"Mango Squash", harga:10000, img:"https://images.unsplash.com/photo-1592928302911-7dbd6f6a4c6d?w=800", desc:"Minuman mango soda segar" },
+      { nama:"Grape Squash", harga:10000, img:"https://images.unsplash.com/photo-1561047030-a46a3b8d6a40?w=800", desc:"Minuman grape soda segar" },
+      { nama:"Red Velvet", harga:12000, img:"https://images.unsplash.com/photo-1523987355523-c7b5b9d6a8d7?w=800", desc:"Red velvet creamy" },
+      { nama:"Matcha", harga:12000, img:"https://images.unsplash.com/photo-1544025162-d76694265947?w=800", desc:"Matcha latte" },
+      { nama:"Taro", harga:12000, img:"https://images.unsplash.com/photo-1584270354949-1f7f8e2e6b9b?w=800", desc:"Taro latte manis & creamy" },
+      { nama:"Lychee Tea", harga:8000, img:"https://images.unsplash.com/photo-1524594154908-3f9b3a8c1d7f?w=800", desc:"Teh leci dingin, segar" },
+      { nama:"Lemon Tea", harga:8000, img:"https://images.unsplash.com/photo-1510627498534-cf7e9002facc?w=800", desc:"Teh lemon segar dingin/panas" },
+      { nama:"Jasmine Tea", harga:5000, img:"https://images.unsplash.com/photo-1482192596544-9eb780fc7f66?w=800", desc:"Teh melati hangat/segar" }
+    ];
+    // ---------- KERANJANG ----------
+    let cart = {};
+    function formatPrice(n){ return 'Rp' + n.toLocaleString(); }
+    function renderMenuList(list, containerId, tipe){
+      const cont = document.getElementById(containerId);
+      cont.innerHTML = '';
+      list.forEach((item,i)=>{
+        const key = tipe+'-'+i;
+        const qty = cart[key]?.qty||0;
+        cont.innerHTML += `
+          <div class="menu-card">
+            <img loading="lazy" src="${item.img}" alt="${item.nama}">
+            <h3>${item.nama}</h3>
+            <div class="desc">${item.desc||""}</div>
+            <div class="price">${formatPrice(item.harga)}</div>
+            <div class="cart-controls">
+              <button class="qty-btn" onclick="addCart('${tipe}',${i},-1)">−</button>
+              <span class="qty">${qty}</span>
+              <button class="qty-btn" onclick="addCart('${tipe}',${i},1)">+</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+    renderMenuList(makanan,"menu-makanan","makanan");
+    renderMenuList(minuman,"menu-minuman","minuman");
+    function addCart(tipe,i,delta){
+      const key = tipe+'-'+i;
+      let item = tipe==="makanan"?makanan[i]:minuman[i];
+      if(!cart[key]) cart[key] = { ...item, qty:0, key };
+      cart[key].qty += delta;
+      if(cart[key].qty<=0){ delete cart[key]; }
+      renderMenuList(makanan,"menu-makanan","makanan");
+      renderMenuList(minuman,"menu-minuman","minuman");
+      renderCart();
+    }
+    function renderCart(){
+      let arr = Object.values(cart).filter(x=>x.qty>0);
+      let list = arr.map(x=>`${x.nama} x${x.qty}`).join(', ');
+      let total = arr.reduce((a,x)=>a+x.qty*x.harga,0);
+      document.getElementById('cartList').innerText = arr.length?list:'Belum ada pesanan';
+      document.getElementById('cartTotal').innerText = arr.length?`Total ${formatPrice(total)}`:'';
+      document.getElementById('cartCheckoutBtn').disabled = arr.length===0;
+    }
+    renderCart();
+    function resetCart(){
+      cart = {};
+      renderMenuList(makanan,"menu-makanan","makanan");
+      renderMenuList(minuman,"menu-minuman","minuman");
+      renderCart();
+    }
+    // ---- Keranjang Modal ----
+    function openCartModal(){
+      let arr = Object.values(cart).filter(x=>x.qty>0);
+      let list = arr.map(x=>`<div>${x.nama} x${x.qty} = ${formatPrice(x.qty*x.harga)}</div>`).join('');
+      let total = arr.reduce((a,x)=>a+x.qty*x.harga,0);
+      document.getElementById('cartModalList').innerHTML = arr.length?list:'Belum ada pesanan';
+      document.getElementById('cartModalTotal').innerText = arr.length?`Total ${formatPrice(total)}`:'';
+      renderCartModalPayOptions();
+      document.getElementById('cartModal').classList.add('show');
+    }
+    function closeCartModal(){
+      document.getElementById('cartModal').classList.remove('show');
+      selectedCartPay = "";
+      document.getElementById('btnCartKirimPesan').disabled = true;
+      document.getElementById('cartModalPayDetails').innerHTML = "";
+    }
+    let selectedCartPay = "";
+    function renderCartModalPayOptions(){
+      const payOptions = [
+        {id:"qris", label:"QRIS (Scan)"},
+        {id:"cash", label:"Cash (Tunai)"},
+        {id:"transfer", label:"Transfer Bank"}
+      ];
+      let html = "";
+      payOptions.forEach(opt=>{
+        html += `<label class="pay-option" id="cartOpt-${opt.id}">
+          <input type="radio" name="cartpay" value="${opt.id}" style="margin-right:6px;" onchange="selectCartPay('${opt.id}')">
+          ${opt.label}
+        </label>`;
+      });
+      document.getElementById("cartModalPayOptions").innerHTML = html;
+      document.getElementById("btnCartKirimPesan").disabled = true;
+    }
+    function selectCartPay(id){
+      selectedCartPay = id;
+      document.getElementById("btnCartKirimPesan").disabled = false;
+      document.querySelectorAll('#cartModalPayOptions .pay-option').forEach(opt=>opt.classList.remove("selected"));
+      const el = document.getElementById("cartOpt-"+id); if(el) el.classList.add("selected");
+      let detail = "";
+      
+      if(id==="qris"){
+        detail = `<div class="qr-details">QRIS - Scan untuk bayar<br>
+        <img src="c:\Users\ASUS\Downloads\qris.jpeg" style="width:130px;margin:9px 0;border-radius:7px"><br>
+        Setelah scan, konfirmasi pembayaran via WhatsApp</div>`;
+      }else if(id==="transfer"){
+        detail = `<div class="bank-details">Transfer ke BCA 1234567890 a.n. K SIXTEEN CAFE.<br>Sertakan bukti transfer saat order.</div>`;
+      }else if(id==="cash"){
+        detail = `<div class="bank-details">Bayar tunai saat pesanan diantar/diambil.</div>`;
+      }
+      document.getElementById("cartModalPayDetails").innerHTML = detail;
+    }
+    function kirimKeranjangWA(){
+      let arr = Object.values(cart).filter(x=>x.qty>0);
+      let msg = `Halo K Sixteen Cafe, saya ingin order:`;
+      arr.forEach(x=>{msg+=`- ${x.nama} x${x.qty} = ${formatPrice(x.qty*x.harga)}`;});
+      let total = arr.reduce((a,x)=>a+x.qty*x.harga,0);
+      msg+=`Total: ${formatPrice(total)}`;
+      msg+=`Metode Pembayaran: ${selectedCartPay.toUpperCase()}`;
+      if(selectedCartPay==="qris"){
+        msg+=`(Saya akan scan QRIS dan mengirim bukti pembayaran jika perlu)`;
+      }else if(selectedCartPay==="transfer"){
+        msg+=`(Saya akan transfer dan kirim bukti transfer)`;
+      }else if(selectedCartPay==="cash"){
+        msg+=`(Saya akan membayar tunai saat pengambilan/diantar)`;
+      }
+      window.open(`https://wa.me/6282132384305?text=${encodeURIComponent(msg)}`,"_blank");
+      closeCartModal();
+      resetCart();
+    }
+    // ---- MENU TABS SWITCH ----
+    function switchMenu(menu){
+      document.querySelectorAll('.menu-tab').forEach(btn=>{
+        btn.classList.toggle('active', btn.dataset.menu===menu);
+      });
+      document.getElementById('menu-makanan').style.display = (menu==="makanan"?"grid":"none");
+      document.getElementById('menu-minuman').style.display = (menu==="minuman"?"grid":"none");
+    }
+    // ---- PAGE SWITCH ----
+    function showPage(page){
+      document.querySelectorAll('.page-section').forEach(sec=>{
+        sec.classList.remove('active');
+      });
+      document.getElementById('page-'+page).classList.add('active');
+      document.querySelectorAll('.nav-link').forEach(link=>{
+        link.classList.toggle('active', link.getAttribute('data-page')===page);
+      });
+      window.location.hash = page;
+    }
+    document.querySelectorAll('.nav-link').forEach(link=>{
+      link.addEventListener('click', function(e){
+        e.preventDefault();
+        const page = this.getAttribute('data-page');
+        showPage(page);
+      });
+    });
+    window.addEventListener('hashchange', function() {
+      let page = location.hash.replace('#','');
+      if(document.getElementById('page-'+page)) showPage(page);
+    });
+    window.addEventListener('DOMContentLoaded', function(){
+      let page = location.hash.replace('#','');
+      if(document.getElementById('page-'+page)) showPage(page);
+    });
+  </script>
+</body>
+</html>
